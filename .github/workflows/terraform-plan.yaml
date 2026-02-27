@@ -1,4 +1,4 @@
-name: Infrastrucuture Deployment Job
+name: Terraform Plan
 
 on:
   push:
@@ -8,10 +8,10 @@ on:
 env:
   TF_CLOUD_ORGANIZATION: "vitaliejicol"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "paymentology"
+  TF_WORKSPACE: "kubernetes-cluster"
   CONFIG_DIRECTORY: "./infrastructure/cluster"
 jobs:
-    build:
+    terraform-plan:
         runs-on: ubuntu-latest
         permissions:
             contents: write
