@@ -18,5 +18,5 @@ jobs:
 
             - name: Deploy infrastructure
               run: |
-                cd infrastructure
-                ./deploy.sh
+                cd infrastructure/cluster
+                terraform init
