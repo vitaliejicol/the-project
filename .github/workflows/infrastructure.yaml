@@ -1,0 +1,22 @@
+name: Infrastrcuture Deployment Job
+
+permissions:
+    contents: write
+    id-token: write
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Deploy infrastructure
+              run: |
+                cd infrastructure
+                ./deploy.sh
