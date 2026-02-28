@@ -1,23 +1,35 @@
 ######### Create ECR ###########
+# Fetch AWS account ID
 data "aws_caller_identity" "current" {}
 
+# Define the list of repositories you want to create
+locals {
+  repositories = ["api", "worker", "frontend"]
+}
+
+# Loop over each repo to create an ECR repository
 module "ecr" {
   source = "terraform-aws-modules/ecr/aws"
 
-  repository_name = "private"
+  for_each = toset(local.repositories)
 
-  repository_read_write_access_arns = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform_cloud"]
+  repository_name = each.value
+
+  repository_read_write_access_arns = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform_cloud"
+  ]
+
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
-        rulePriority = 1,
-        description  = "Keep last 30 images",
+        rulePriority = 1
+        description  = "Keep last 30 images"
         selection = {
-          tagStatus     = "tagged",
-          tagPrefixList = ["v"],
-          countType     = "imageCountMoreThan",
+          tagStatus     = "tagged"
+          tagPrefixList = ["v"]
+          countType     = "imageCountMoreThan"
           countNumber   = 30
-        },
+        }
         action = {
           type = "expire"
         }

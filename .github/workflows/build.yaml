@@ -58,8 +58,8 @@ jobs:
           file: ./application/api/Dockerfile
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/myapp-api:${{ env.APP_VERSION }}
-            ${{ steps.login-ecr.outputs.registry }}/myapp-api:latest
+            ${{ steps.login-ecr.outputs.registry }}/api:${{ env.APP_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -73,8 +73,8 @@ jobs:
           file: ./application/worker/Dockerfile
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/myapp-worker:${{ env.APP_VERSION }}
-            ${{ steps.login-ecr.outputs.registry }}/myapp-worker:latest
+            ${{ steps.login-ecr.outputs.registry }}/worker:${{ env.APP_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/worker:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -88,7 +88,7 @@ jobs:
           file: ./application/frontend/Dockerfile
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/myapp-frontend:${{ env.APP_VERSION }}
-            ${{ steps.login-ecr.outputs.registry }}/myapp-frontend:latest
+            ${{ steps.login-ecr.outputs.registry }}/frontend:${{ env.APP_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
