@@ -20,6 +20,13 @@ jobs:
 
     #   - name: Set version
     #     run: echo "APP_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+      - name: Extract version
+        id: version
+        run: |
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+    
 
       - name: Debug version
         run: echo "APP_VERSION=$APP_VERSION"
