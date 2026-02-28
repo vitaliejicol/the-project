@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    # branches: [ main ]
     tags: [ 'v*.*.*' ]
   workflow_dispatch:
 
@@ -18,8 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set version
-        run: echo "APP_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+    #   - name: Set version
+    #     run: echo "APP_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Debug version
         run: echo "APP_VERSION=$APP_VERSION"
@@ -40,14 +40,19 @@ jobs:
       ########################################
       # API SERVICE
       ########################################
-      - name: Build and Push API
+      - name: Debug registry
+        run: |
+            echo "Registry value: '${{ steps.login-ecr.outputs.registry }}'"
+            
+      - name: Build and push API
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./application/api/Dockerfile
           push: true
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/myapp-api:${{ env.APP_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/myapp-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
