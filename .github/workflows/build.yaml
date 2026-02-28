@@ -92,3 +92,38 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  deploy-qa:
+    needs: build-push
+    runs-on: ubuntu-latest
+    environment: qa
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Deploy to QA
+        run: echo "Deploying version ${{ env.APP_VERSION }} to QA environment..."
+
+  deploy-uat:
+    needs: build-push
+    runs-on: ubuntu-latest
+    environment: uat
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Deploy to UAT
+        run: echo "Deploying version ${{ env.APP_VERSION }} to QA environment..."
+
+  deploy-prod:
+    needs: build-push
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Deploy to QA
+        run: echo "Deploying version ${{ env.APP_VERSION }} to QA environment..."
