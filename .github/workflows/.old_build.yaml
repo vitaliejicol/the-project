@@ -23,7 +23,14 @@ jobs:
       
       # - name: Run Test
       #   run: ./runt-tests.sh
-
+      
+      - name: Extract version
+        id: version
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+      
       - name: Save image info
         run: |
           echo "API_IMAGE=myapp-api:${{ github.sha }}" >> $GITHUB_ENV
