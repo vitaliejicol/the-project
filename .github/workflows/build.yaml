@@ -3,84 +3,77 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*.*.*' ]
   workflow_dispatch:
 
 jobs:
-  build:
+  build-push:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      APP_VERSION: ${GITHUB_REF#refs/tags/v}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Build API Service
-        run: docker build -t myapp-api:${{ github.sha }} -f ./application/api/Dockerfile .
+      - name: Set version
+        run: echo "APP_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
-      - name: Build Worker Service
-        run: docker build -t myapp-worker:${{ github.sha }} -f ./application/worker/Dockerfile .
-      
-      - name: Build Frontend Service
-        run: docker build -t myapp-frontend:${{ github.sha }} -f ./application/frontend/Dockerfile .
-      
-      # - name: Run Test
-      #   run: ./runt-tests.sh
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Save image info
-        run: |
-          echo "API_IMAGE=myapp-api:${{ github.sha }}" >> $GITHUB_ENV
-          echo "WORKER_IMAGE=myapp-worker:${{ github.sha }}" >> $GITHUB_ENV
-          echo "FRONTEND_IMAGE=myapp-frontend:${{ github.sha }}" >> $GITHUB_ENV
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: "${{ secrets.AWS_ROLE_ARN }}"
-          aws-region: "${{ secrets.AWS_REGION }}"
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Fetch all tags
-        run: git fetch --tags
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Calculate Semantic Version
-        id: semver
-        run: |
-          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1)) || echo "0.0.0")
-          VERSION=${LATEST_TAG}
-          COMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"%s")
+      ########################################
+      # API SERVICE
+      ########################################
+      - name: Build and Push API
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./application/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+      ########################################
+      # WORKER SERVICE
+      ########################################
+      - name: Build and push Worker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./application/worker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/myapp-worker:${{ env.APP_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/myapp-worker:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-          if echo "$COMITS" | grep -q "BREAKING CHANGE"; then
-            MAJOR=$((MAJOR + 1))
-            MINOR=0
-            PATCH=0
-          elif echo "$COMITS" | grep -q "feat"; then
-            MINOR=$((MINOR + 1))
-            PATCH=0
-          elif echo "$COMITS" | grep -q "fix"; then
-            PATCH=$((PATCH + 1))
-          fi
-
-          NEXT_VERSION="$MAJOR.$MINOR.$PATCH"
-          echo "APP_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
-          echo "Calculated next version: $NEXT_VERSION"
-
-          - name: Tag and Push Docker Images
-            run: |
-              docker tag myapp-api:${{ github.sha }} myapp-api:${{ env.APP_VERSION }}
-              docker tag myapp-worker:${{ github.sha }} myapp-worker:${{ env.APP_VERSION }}
-              docker tag myapp-frontend:${{ github.sha }} myapp-frontend:${{ env.APP_VERSION }}
-              docker push myapp-api:${{ env.APP_VERSION }}
-              docker push myapp-worker:${{ env.APP_VERSION }}
-              docker push myapp-frontend:${{ env.APP_VERSION }}
-          
-          - name: Create Git Tag
-            run: |
-              git tag -a v${{ env.APP_VERSION }} -m "Release version ${{ env.APP_VERSION }}"
-              git push origin v${{ env.APP_VERSION }}
-
-                                                                                                                                                                                                                                                                                                                                  
+      ########################################
+      # FRONTEND SERVICE
+      ########################################
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./application/frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/myapp-frontend:${{ env.APP_VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/myapp-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
