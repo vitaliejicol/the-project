@@ -57,6 +57,7 @@ jobs:
           context: .
           file: ./application/api/Dockerfile
           push: true
+          platforms: linux/amd64
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/api:${{ env.APP_VERSION }}
           cache-from: type=gha
@@ -71,6 +72,7 @@ jobs:
           context: .
           file: ./application/worker/Dockerfile
           push: true
+          platforms: linux/amd64
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/worker:${{ env.APP_VERSION }}
           cache-from: type=gha
@@ -85,6 +87,7 @@ jobs:
           context: .
           file: ./application/frontend/Dockerfile
           push: true
+          platforms: linux/amd64
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/frontend:${{ env.APP_VERSION }}
           cache-from: type=gha
