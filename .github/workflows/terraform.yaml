@@ -84,7 +84,7 @@ jobs:
     terraform-apply:
       needs: terraform-plan
       runs-on: ubuntu-latest
-      environment: approval-request
+      environment: production
       permissions:
           contents: write
           id-token: write
