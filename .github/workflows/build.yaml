@@ -59,7 +59,6 @@ jobs:
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/api:${{ env.APP_VERSION }}
-            ${{ steps.login-ecr.outputs.registry }}/api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -74,7 +73,6 @@ jobs:
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/worker:${{ env.APP_VERSION }}
-            ${{ steps.login-ecr.outputs.registry }}/worker:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -89,7 +87,6 @@ jobs:
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/frontend:${{ env.APP_VERSION }}
-            ${{ steps.login-ecr.outputs.registry }}/frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
   deploy-qa:
