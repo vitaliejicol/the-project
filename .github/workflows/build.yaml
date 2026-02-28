@@ -105,7 +105,7 @@ jobs:
         run: echo "Deploying version ${{ env.APP_VERSION }} to QA environment..."
 
   deploy-uat:
-    needs: build-push
+    needs: deploy-qa
     runs-on: ubuntu-latest
     environment: uat
     permissions:
@@ -117,7 +117,7 @@ jobs:
         run: echo "Deploying version ${{ env.APP_VERSION }} to QA environment..."
 
   deploy-prod:
-    needs: build-push
+    needs: deploy-uat
     runs-on: ubuntu-latest
     environment: prod
     permissions:
