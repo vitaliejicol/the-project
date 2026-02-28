@@ -1,4 +1,4 @@
-/infrastructure/cluster/.terraform
-/infrastructure/cluster/.terraform.lock.hcl
-/infrastructure/cluster/terraform.tfstate
-/infrastructure/cluster/test.tfvars
+/infrastructure/cluster/terraform/.terraform
+/infrastructure/cluster/terraform/.terraform.lock.hcl
+/infrastructure/cluster/terraform/terraform.tfstate
+/infrastructure/cluster/terraform/test.tfvars

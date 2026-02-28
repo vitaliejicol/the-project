@@ -10,7 +10,7 @@ env:
   TF_CLOUD_ORGANIZATION: "vitaliejicol"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "kubernetes-cluster"
-  CONFIG_DIRECTORY: "./infrastructure/cluster"
+  CONFIG_DIRECTORY: "./infrastructure/cluster/terraform"
 jobs:
     terraform-plan:
         runs-on: ubuntu-latest
