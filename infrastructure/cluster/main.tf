@@ -23,6 +23,6 @@ module "hcp" {
   operator_role_prefix  = "paymentology-cluster-operator"
 
   create_admin_user = true
-  admin_credentials_username = "vitaliejicol"
-  admin_credentials_password = "StrongPassword123!"
+  admin_credentials_username = var.admin_credentials_username
+  admin_credentials_password = var.admin_credentials_password
 }

@@ -3,3 +3,12 @@ variable "rhcs_token" {
   type        = string
   
 }
+
+variable "admin_credentials_username" {
+  description = "Admin username for the OpenShift cluster"
+  type        = string
+}
+variable "admin_credentials_password" {
+  description = "Admin password for the OpenShift cluster"
+  type        = string
+}
