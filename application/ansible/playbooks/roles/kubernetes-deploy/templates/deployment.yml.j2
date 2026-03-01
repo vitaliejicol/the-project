@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: {{ item.name }}
-          image: {{ item.image_api }}
+          image: {{ item.image }}
           ports:
             - containerPort: {{ item.container_port }}
