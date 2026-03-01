@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,4 +18,3 @@ spec:
           image: {{ image }}
           ports:
             - containerPort: {{ container_port }}
-          imagePullPolicy: IfNotPresent

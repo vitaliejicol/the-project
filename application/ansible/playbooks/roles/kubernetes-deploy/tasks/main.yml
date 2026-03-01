@@ -20,6 +20,7 @@
     namespace: "{{ item.namespace }}"
     image: "{{ item.image }}"
     replicas: "{{ item.replicas }}"
+    container_port: "{{ item.container_port }}"
 
 - name: Deploy Services
   kubernetes.core.k8s:
