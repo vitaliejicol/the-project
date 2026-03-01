@@ -107,6 +107,27 @@ jobs:
     steps:
       - name: Deploy to QA
         run: echo "Deploying version ${{ env.APP_VERSION }} to QA environment..."
+    
+      - name: Install OpenShift CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 'latest' # Or a specific version, e.g., '4.11'
+
+      - name: Log in to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true # Adjust this based on your cluster's certificate setup
+        #   namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+    
+      - name: Testing step
+        run: oc whoami --show-server
+    
+      - name: Deploy via Ansible
+        run: |
+          ansible-playbook playbooks/deploy-app.yml \
+            -i ./application/ansible/inventories/qa/hosts.yml
 
   deploy-uat:
     needs: deploy-qa
