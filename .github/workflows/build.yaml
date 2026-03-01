@@ -151,7 +151,7 @@ jobs:
         run: |
           cd application/ansible
           ansible-playbook playbooks/deploy-app.yml -i inventories/qa/hosts.yml \
-            -e "AAP_VERSION=${{ env.APP_VERSION }}" \
+            -e "APP_VERSION=${{ env.APP_VERSION }}" \
             -e "AWS_ACCOUNT=${{ secrets.AWS_ACCOUNT }}" \
 
 
