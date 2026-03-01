@@ -1,5 +1,10 @@
-- hosts: localhost
-  connection: local
+---
+- name: Deploy applications to OpenShift
+  hosts: all
   gather_facts: false
+
+  vars:
+    kubeconfig_path: "{{ lookup('env','HOME') }}/.kube/config"
+
   roles:
-    - kubernetes-deploy
+    - role: kubernetes-deploy
