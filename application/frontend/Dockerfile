@@ -1,5 +1,3 @@
-# Use a lightweight base image from Docker Hub
 FROM alpine:latest
 
-# Set the default command to execute when the container starts
-CMD ["echo", "Hello, World!"]
+CMD ["sh", "-c", "while true; do sleep 3600; done"]
