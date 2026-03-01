@@ -1,0 +1,33 @@
+- name: Ensure namespaces exist
+  kubernetes.core.k8s:
+    state: present
+    api_version: v1
+    kind: Namespace
+    name: "{{ item.namespace }}"
+  loop: "{{ apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Deploy Deployments
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+  loop: "{{ apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+  vars:
+    app_name: "{{ item.name }}"
+    namespace: "{{ item.namespace }}"
+    image: "{{ item.image }}"
+    replicas: "{{ item.replicas }}"
+
+- name: Deploy Services
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'service.yml.j2') }}"
+  loop: "{{ apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+  vars:
+    app_name: "{{ item.name }}"
+    namespace: "{{ item.namespace }}"

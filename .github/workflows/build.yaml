@@ -17,8 +17,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    env:
-      APP_VERSION: ${GITHUB_REF#refs/tags/v}
+    # env:
+    #   APP_VERSION: ${GITHUB_REF#refs/tags/v}
 
     steps:
       - uses: actions/checkout@v4
@@ -140,12 +140,17 @@ jobs:
         #   namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
     
       - name: Testing step
-        run: oc whoami --show-server
-    
+        run: |
+            oc whoami --show-server
+            ls -la
+            ansible --version
+
       - name: Deploy via Ansible
         run: |
-          ansible-playbook playbooks/deploy-app.yml \
-            -i ./application/ansible/inventories/qa/hosts.yml
+          ansible-playbook playbooks/deploy-app.yml -i inventories/qa/hosts.yml \
+            -e "AAP_VERSION=${{ env.APP_VERSION }}" \
+            -e "AWS_ACCOUNT=${{ secrets.AWS_ACCOUNT }}" \
+
 
   deploy-uat:
     needs: deploy-qa
