@@ -1,0 +1,17 @@
+---
+- name: Ensure Kubernetes namespace exists
+  kubernetes.core.k8s:
+    state: present
+    api_version: v1
+    kind: Namespace
+    name: "{{ namespace }}"
+
+- name: Deploy application Deployment
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+
+- name: Deploy application Service
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'service.yml.j2') }}"
