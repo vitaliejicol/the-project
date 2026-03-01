@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ app_name }}
+  name: {{ name }}
   namespace: {{ namespace }}
 spec:
   selector:
-    app: {{ app_name }}
+    app: {{ name }}
   ports:
     - protocol: TCP
       port: {{ service_port }}
