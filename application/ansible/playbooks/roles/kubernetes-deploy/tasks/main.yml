@@ -30,8 +30,8 @@
             containers:
               - name: "{{ item.name }}"
                 image: "{{ item.image }}"
-                ports:
-                  - containerPort: "{{ item.container_port }}"
+                # ports:
+                #   - containerPort: "{{ item.container_port }}"
   loop: "{{ apps }}"
   loop_control:
     label: "{{ item.name }}"
