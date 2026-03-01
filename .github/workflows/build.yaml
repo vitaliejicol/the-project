@@ -144,8 +144,11 @@ jobs:
       - name: Testing step
         run: |
             oc whoami --show-server
-            ls -la
-            ansible --version
+
+      - name: Set up Python dependencies
+        run: |
+            python3 -m pip install --upgrade pip
+            python3 -m pip install ansible kubernetes openshift
 
       - name: Deploy via Ansible
         run: |
