@@ -8,27 +8,51 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Deploy Deployments
+- name: Deploy Applications
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: "{{ item.name }}"
+        namespace: "{{ item.namespace }}"
+      spec:
+        replicas: "{{ item.replicas }}"
+        selector:
+          matchLabels:
+            app: "{{ item.name }}"
+        template:
+          metadata:
+            labels:
+              app: "{{ item.name }}"
+          spec:
+            containers:
+              - name: "{{ item.name }}"
+                image: "{{ item.image }}"
+                ports:
+                  - containerPort: "{{ item.container_port }}"
   loop: "{{ apps }}"
   loop_control:
     label: "{{ item.name }}"
-  vars:
-    app_name: "{{ item.name }}"
-    namespace: "{{ item.namespace }}"
-    image: "{{ item.image }}"
-    replicas: "{{ item.replicas }}"
-    container_port: "{{ item.container_port }}"
 
 - name: Deploy Services
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('template', 'service.yml.j2') }}"
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: "{{ item.name }}"
+        namespace: "{{ item.namespace }}"
+      spec:
+        selector:
+          app: "{{ item.name }}"
+        ports:
+          - protocol: TCP
+            port: "{{ item.container_port }}"
+            targetPort: "{{ item.container_port }}"
+        type: ClusterIP
   loop: "{{ apps }}"
   loop_control:
     label: "{{ item.name }}"
-  vars:
-    app_name: "{{ item.name }}"
-    namespace: "{{ item.namespace }}"
