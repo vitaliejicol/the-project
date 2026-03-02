@@ -18,8 +18,27 @@ on:
             - frontend
 
 jobs:
+  TBA:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  TBD:
+    runs-on: ubuntu-latest
+    needs: TBA
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
   build-push:
     runs-on: ubuntu-latest
+    needs: TBD
     permissions:
       id-token: write
       contents: read  
