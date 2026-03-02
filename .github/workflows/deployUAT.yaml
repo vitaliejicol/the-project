@@ -1,4 +1,4 @@
-name: TBD
+name: Deploy|UAT
 
 permissions:
     contents: write

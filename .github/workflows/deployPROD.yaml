@@ -1,4 +1,4 @@
-name: Build Application Job
+name: Deploy|Prod
 
 permissions:
     contents: write

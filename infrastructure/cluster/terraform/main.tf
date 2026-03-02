@@ -1,6 +1,6 @@
 
 
-# ######## Create ROSA HCP Cluster ###########
+######## Create ROSA HCP Cluster ###########
 
 # module "vpc" {
 #   source = "terraform-redhat/rosa-hcp/rhcs//modules/vpc"
@@ -31,51 +31,51 @@
 #   admin_credentials_password = var.admin_credentials_password
 # }
 
-# ######### Create ECR ###########
+######### Create ECR ###########
 
-# # Fetch AWS account ID
-# data "aws_caller_identity" "current" {}
+# Fetch AWS account ID
+data "aws_caller_identity" "current" {}
 
-# # Define the list of repositories you want to create
-# locals {
-#   repositories = ["api", "worker", "frontend"]
-# }
+# Define the list of repositories you want to create
+locals {
+  repositories = ["api", "worker", "frontend"]
+}
 
-# # Loop over each repo to create an ECR repository
-# module "ecr" {
-#   source = "terraform-aws-modules/ecr/aws"
+# Loop over each repo to create an ECR repository
+module "ecr" {
+  source = "terraform-aws-modules/ecr/aws"
 
-#   for_each = toset(local.repositories)
+  for_each = toset(local.repositories)
 
-#   repository_name = each.value
+  repository_name = each.value
 
-#   repository_read_write_access_arns = [
-#     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform_cloud"
-#   ]
+  repository_read_write_access_arns = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/terraform_cloud"
+  ]
 
-#   repository_lifecycle_policy = jsonencode({
-#     rules = [
-#       {
-#         rulePriority = 1
-#         description  = "Keep last 30 images"
-#         selection = {
-#           tagStatus     = "tagged"
-#           tagPrefixList = ["v"]
-#           countType     = "imageCountMoreThan"
-#           countNumber   = 30
-#         }
-#         action = {
-#           type = "expire"
-#         }
-#       }
-#     ]
-#   })
+  repository_lifecycle_policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep last 30 images"
+        selection = {
+          tagStatus     = "tagged"
+          tagPrefixList = ["v"]
+          countType     = "imageCountMoreThan"
+          countNumber   = 30
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
 
-#   tags = {
-#     Terraform   = "true"
-#     Environment = "prod"
-#   }
-# }
+  tags = {
+    Terraform   = "true"
+    Environment = "prod"
+  }
+}
 
 # ######### Create KMS ###########
 # # Define the keys you want to create
