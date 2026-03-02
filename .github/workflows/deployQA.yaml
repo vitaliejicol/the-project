@@ -16,7 +16,7 @@ on:
 jobs:
   deploy-qa:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    # environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
