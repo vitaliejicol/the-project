@@ -8,32 +8,32 @@
   loop_control:
     label: "{{ item.name }}"
 
-# - name: Deploy application Deployment
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: "{{ lookup('template', 'deployment.yml.j2') }}"
-#   loop: "{{ apps }}"
-#   loop_control:
-#     label: "{{ item.name }}"
+- name: Deploy application Deployment
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+  loop: "{{ apps }}"
+  loop_control:
+    label: "{{ item.name }}"
 
-# - name: Deploy application Service
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: "{{ lookup('template', 'service.yml.j2') }}"
-#   loop: "{{ apps }}"
-#   loop_control:
-#     label: "{{ item.name }}"
+- name: Deploy application Service
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'service.yml.j2') }}"
+  loop: "{{ apps }}"
+  loop_control:
+    label: "{{ item.name }}"
 
-# - name: Deploy Frontend Ingress (if needed)
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: "{{ lookup('template', 'frontend-ingress.yml.j2') }}"
-#   when: item.name != 'qa'
-#   loop: "{{ apps }}"
-#   loop_control:
-#     label: "{{ item.name }}"
+- name: Deploy Frontend Ingress (if needed)
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'frontend-ingress.yml.j2') }}"
+  when: item.name != 'qa'
+  loop: "{{ apps }}"
+  loop_control:
+    label: "{{ item.name }}"
 
-# - name: Apply NetworkPolicy to allow only internal traffic
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: "{{ lookup('template', 'networkpolicy.yml.j2') }}"
+- name: Apply NetworkPolicy to allow only internal traffic
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'networkpolicy.yml.j2') }}"
