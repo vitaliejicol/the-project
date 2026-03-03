@@ -1,34 +1,34 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ item.name }}-ingress
-  namespace: {{ item.namespace }}
+  name: "{{ item.name }}-ingress"
+  namespace: "{{ item.namespace }}"
   labels:
-    app: {{ item.name }}
-    environment: {{ environment }}
+    app: "{{ item.name }}"
+    environment: "{{ environment }}"
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
     {% if environment == 'uat' %}
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: uat-basic-auth
+    nginx.ingress.kubernetes.io/auth-type: "basic"
+    nginx.ingress.kubernetes.io/auth-secret: "uat-basic-auth"
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
     {% endif %}
 spec:
   rules:
-    - host: {{ item.name }}.{{ environment }}.example.com
+    - host: "{{ item.name }}.{{ environment }}.example.com"
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ item.name }}
+                name: "{{ item.name }}"
                 port:
-                  number: {{ item.service_port }}
+                  number: {{ item.service_port | int }}
   {% if environment == 'prod' %}
   tls:
     - hosts:
-        - {{ item.name }}.{{ environment }}.example.com
-      secretName: prod-tls-secret
+        - "{{ item.name }}.{{ environment }}.example.com"
+      secretName: "prod-tls-secret"
   {% endif %}
