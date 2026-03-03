@@ -1,6 +1,105 @@
 # DevOps Engineer Project
 
-End-to-end DevOps implementation of a containerized microservices system deployed on ROSA AWS (Kubernetes) with full CI/CD automation and environment separation (QA, UAT, PROD).
+End-to-end DevOps implementation of a containerized microservices system deployed on **ROSA AWS (Kubernetes)** with CI/CD and multi-environment support (QA, UAT, PROD).  
+
+I have virtually split this project into **two parts**: **infrastructure** and **application**.  
+
+- For **infrastructure deployment**, I am using **Terraform modules** to provision cloud resources and **Ansible** to configure Kubernetes and related resources.  
+- For **application deployment**, I am using **Ansible only** to manage microservices deployments across different environments.  
+
+This architecture is a **designed baseline and not the final version** — there are many areas for enhancement. Future improvements could include additional infrastructure strategies to increase **high availability, resilience, and scalability**.
+
+---
+
+## Project Considerations
+
+While designing this project, I plan to answer the following key questions to guide the DevOps implementation:
+
+### 1. **What environments will exist?**
+
+  - QA – Internal validation; developers and QA team only.
+  - UAT – External testing by developers or customers; mirrors production functionality.
+  - PROD – Customer-facing, fully managed production environment.
+  - Other environments that can be are development,integration or sandbox.
+
+### 2. **What lifespans will those environments have?**
+
+  - QA – Persistent for ongoing testing; refreshed per sprint or release cycle.
+  - UAT – Persistent until testing is complete; can be recycled after each release.
+  - PROD – Permanent, only updated with controlled deployments.
+  - Ephemeral environments – Short-lived (sandboxes)
+
+### 3. **What processes will manage them?**
+
+  - Terraform/Ansible will manage the Cluster and Cluster Configuration
+  - Ansible will manage the environments.
+
+### 4. **What Git repositories/branches/tags will be used?**
+
+  - Repository layout:
+      - infrastructure/ – Terraform and Ansible configurations
+      - application/ – Ansible
+
+  - Branches:
+    - main – Production-ready code
+    - dev – Integration testing
+    - feature/** – Feature branches for new development
+  - Tags:
+     - vX.Y.Z – Release versions for production deployments
+
+### 5. **How will those branches/tags be used to promote changes between environments?**
+
+    - Dev → QA: dev branch changes automatically deployed to QA.
+    - QA → UAT: After QA validation, merge dev into uat branch; CI/CD deploys to UAT.
+    - UAT → PROD: After UAT approval, merge uat into main and tag with vX.Y.Z; production deployment is triggered with GitHub environment approvals.
+
+
+### 6. **What pipeline automation will exist?**
+
+   - Build&Push, Deploy
+
+### 7. **How will it be written?**  
+  
+  - GitHub Action YAML workflows
+  
+### 8. **What tools will be used?**
+
+    - Terraform – Infrastructure provisioning
+    - Ansible – Kubernetes configuration and deployment
+    - Docker – Containerization
+    - Maven – Java/Spring Boot builds
+    - GitHub Actions – CI/CD automation
+    - ROSA AWS – Managed Kubernetes cluster
+
+### 9. **How will the tools communicate and authenticate with each other and the Kubernetes cluster?**  
+
+    - GitHub Actions ↔ AWS: OIDC assume IAM roles with least privileges
+    - Terraform ↔ AWS: OIDC assume IAM roles with least privileges
+    - GitHub Action ↔ Ansible ↔ The workflow uses a service account token stored in GitHub Secrets (OPENSHIFT_TOKEN) to authenticate to the OpenShift - - API endpoint (OPENSHIFT_SERVER_URL).
+    - Docker ↔ ECR: Login via GitHub Actions (aws-actions/amazon-ecr-login)
+    - Microservices communication: Internal via ClusterIP services; no external network access except Frontend/UAT/PROD Ingress
+
+### 10. **How will environment workloads be kept separate on the cluster?**
+
+    - Namespaces: One per environment (qa, uat, prod)
+    - Resource quotas & limits: Prevent one environment from consuming all cluster resources
+    - NetworkPolicies: Restrict communication to only required pods within the environment
+    - RBAC roles: Limit user/service account permissions per environment
+
+### 11. **What accounts exist to effect the deployment?**
+
+    - GitHub Actions – CI/CD runner (uses OIDC to assume AWS role)
+      - AWS IAM Roles:
+        - Terraform provisioning role
+        - Deployment role for GitHub Actions
+    - Service Accounts in Kubernetes: Each namespace has SA for microservices with appropriate RBAC
+    - Developers / Admins: GitHub access for code, workflow_dispatch triggers
+
+12. **What changes I would add or I will improce?**
+
+---
+
+This section ensures that **every design decision** is intentional, and the project remains **scalable, secure, and maintainable**.
 
 ---
 
@@ -198,6 +297,26 @@ CICD Workflow:
     QA: internal deployment for testing
     UAT: external deployment for developers
     PROD: customer-facind deployment with approval gating
+
+
+`Step 1`
+
+Build the image and push to AWS ECR repository.
+
+![Build Push](images/GHABuildPush.png)
+
+![AWS ECR](images/AWSECR.png)
+
+![AWS ECR Image Tag](images/AWSECRImageTag.png)
+
+
+`Step 2`
+
+Deploy to the desired environment. Select the desired pipeline. 
+
+![QA Deployement](images/GHAQA.png)
+
+![Terminal Pod Status](images/TerminalDeployment.png)
 
 
 </details>

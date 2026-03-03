@@ -1,11 +1,11 @@
 name: Build|Push|Dev
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-      - 'feature/**'
+#   push:
+#     branches:
+#       - main
+#       - dev
+#       - 'feature/**'
   workflow_dispatch:
     inputs:
         service:
