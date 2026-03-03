@@ -8,21 +8,21 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Deploy application Deployment
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'deployment.yml.j2') }}"
-  loop: "{{ apps }}"
-  loop_control:
-    label: "{{ item.name }}"
+# - name: Deploy application Deployment
+#   kubernetes.core.k8s:
+#     state: present
+#     definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+#   loop: "{{ apps }}"
+#   loop_control:
+#     label: "{{ item.name }}"
 
-- name: Deploy application Service
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'service.yml.j2') }}"
-  loop: "{{ apps }}"
-  loop_control:
-    label: "{{ item.name }}"
+# - name: Deploy application Service
+#   kubernetes.core.k8s:
+#     state: present
+#     definition: "{{ lookup('template', 'service.yml.j2') }}"
+#   loop: "{{ apps }}"
+#   loop_control:
+#     label: "{{ item.name }}"
 
 # - name: Deploy Frontend Ingress (if needed)
 #   kubernetes.core.k8s:
