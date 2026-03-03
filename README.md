@@ -13,7 +13,13 @@ This architecture is a **designed baseline and not the final version** — there
 
 ## Project Considerations
 
-While designing this project, I plan to answer the following key questions to guide the DevOps implementation:
+<details>
+
+<Summary>Click to expand the Project Considerantions</summary>
+
+While designing this project, I addressed the key questions that guided the DevOps implementation. Any aspects not explicitly covered in the design were clarified in the posted questions.
+
+![Architecture Diagram](images/ArchitectureDiagram.png)
 
 ### 1. **What environments will exist?**
 
@@ -41,8 +47,10 @@ While designing this project, I plan to answer the following key questions to gu
       - application/ – Ansible
 
   - Branches:
-    - main – Production-ready code
+    - main – Production
     - dev – Integration testing
+    - qa - QA
+    - uat - UAT
     - feature/** – Feature branches for new development
   - Tags:
      - vX.Y.Z – Release versions for production deployments
@@ -67,7 +75,7 @@ While designing this project, I plan to answer the following key questions to gu
     - Terraform – Infrastructure provisioning
     - Ansible – Kubernetes configuration and deployment
     - Docker – Containerization
-    - Maven – Java/Spring Boot builds
+    - Maven/Gradle – Java/Spring Boot builds
     - GitHub Actions – CI/CD automation
     - ROSA AWS – Managed Kubernetes cluster
 
@@ -95,15 +103,75 @@ While designing this project, I plan to answer the following key questions to gu
     - Service Accounts in Kubernetes: Each namespace has SA for microservices with appropriate RBAC
     - Developers / Admins: GitHub access for code, workflow_dispatch triggers
 
-12. **What changes I would add or I will improce?**
+12. **What changes I would add or I will improve?**
 
----
+   Architecture & Platform Requirements:
+    1. Environment & Isolation
+      - Each environment (/qa/uat/prod) must run in a separate Kubernetes cluster.
+      - Each cluster must reside in a separate AWS account (strong isolation boundary).
+      - Each environment must connect to its own dedicated database instance (no shared DBs across environments).
+      - Network segmentation must be enforced (VPC isolation, private subnets, restricted ingress/egress).
+      - Use a third-party artifact repository such as JFrog Artifactory.
 
-This section ensures that **every design decision** is intentional, and the project remains **scalable, secure, and maintainable**.
+    2. Observability & Monitoring
+      - Deploy and configure:
+      - Prometheus for metrics collection.
+      - Grafana for visualization.
+      - Jaeger for distributed tracing.
 
----
+    3. Data Management
+      - Regular automated database backups (daily + retention policy).
+      - Backup verification strategy (restore testing).
+      - Secret rotation policy (automatic rotation preferred).
 
-# Architecture Overview
+  Application Requirements:
+
+    1. Database & Migrations
+
+      - Schema updates must be managed via Liquibase.
+
+    2. Deployment Strategy:
+
+      - Use Blue-Green deployment strategy.
+      - GitOps-based deployments using ArgoCD.
+
+    3. Security & Quality:
+
+      - Integrate security scanning in CI/CD:
+         - SonarQube.
+         - Snyk.
+      - Container image scanning before deployment.
+      - Enforce branch protection and PR reviews.
+
+   4. Networking:
+
+      - Use ingress controller.
+    
+    5. Repository Structure:
+
+      - Separate repositories for:
+        - Application code
+        - Infrastructure (Terraform/Ansible)
+        - CI/CD workflows
+    
+
+    Infrastructure Requirements:
+
+    1. Infrastructure as Code:
+      - Use private Terraform modules.
+      - Maintain versioned modules. 
+      - Use separate Terraform state per environment.
+
+    2. Security & Governance:
+      
+      - Policy-as-code (Sentinel).
+      - Automated cost monitoring.
+      - Least-privilege IAM roles.
+
+
+</details>
+
+##  Architecture Overview
 
 This project demonstrates:
 
@@ -116,7 +184,7 @@ This project demonstrates:
 
 ---
 
-# Repository Structure
+# Part 0 - Repository Structure
 <details>
 
 <Summary>Click to expand the Repository Structure</summary>
@@ -202,7 +270,6 @@ the-project/
 │           ├── main.tf
 │           ├── provider.tf
 │           ├── README.md
-│           ├── test.tfvars
 │           └── variables.tf
 ```
 
