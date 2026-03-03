@@ -214,7 +214,7 @@ the-project/
 
 <Summary>Click to expand the Infrastructure details</summary>
 
-The infrastructure is fully provisioned and maned using Infrastructure as Code principles.
+The infrastructure is fully provisioned and managed using Infrastructure as Code principles.
 
 ### Technologies
 - Terraform (ROSA provisioning)
