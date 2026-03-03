@@ -1,6 +1,6 @@
 ---
 - name: Deploy applications to OpenShift
-  hosts: all
+  hosts: localhost
   gather_facts: false
 
   vars:
