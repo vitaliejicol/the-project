@@ -1,0 +1,51 @@
+name: ConfigCLuster
+
+on:
+  push:
+    # branches: [ main ]
+    # tags: [ 'v*.*.*' ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select cluster environment to configure"
+        required: true
+        type: choice
+        options:
+          - qa
+          - uat
+          - prod
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+    
+      - name: Install OpenShift CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 'latest'
+
+      - name: Log in to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+
+      - name: Set up Python dependencies
+        run: |
+            python3 -m pip install --upgrade pip
+            python3 -m pip install ansible kubernetes openshift
+
+      - name: Deploy via Ansible
+        run: |
+          cd infrastsructure/ansible
+          ansible-playbook playbooks/cluster-config.yml -i inventories/cluster-${{ inputs.environment }}/hosts.yml \
+            -e "AWS_ACCOUNT=${{ secrets.AWS_ACCOUNT }}" \
+            -e "AWS_REGION=${{ secrets.AWS_REGION }}"
