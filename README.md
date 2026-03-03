@@ -2,7 +2,6 @@
 
 End-to-end DevOps implementation of a containerized microservices system deployed on **ROSA AWS (Kubernetes)** with CI/CD and multi-environment support (QA, UAT, PROD).  
 
-I have virtually split this project into **two parts**: **infrastructure** and **application**.  
 
 - For **infrastructure deployment**, I am using **Terraform modules** to provision cloud resources and **Ansible** to configure Kubernetes and related resources.  
 - For **application deployment**, I am using **Ansible only** to manage microservices deployments across different environments.  
