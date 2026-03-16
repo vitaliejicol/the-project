@@ -4,3 +4,8 @@
 /infrastructure/cluster/terraform/test.tfvars
 .vscode/settings.json
 backup.README.md
+env
+.vscode
+dbt-dag/.astro
+dbt-dag/.venv
+dbt-dag/__pycache__
