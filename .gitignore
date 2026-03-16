@@ -9,3 +9,4 @@ env
 dbt-dag/.astro
 dbt-dag/.venv
 dbt-dag/__pycache__
+logs/
